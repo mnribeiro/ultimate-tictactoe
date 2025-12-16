@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Tic-Tac-Toe | Jogo da Velha 2.0</title>
+    <meta name="description"
+        content="Jogo da Velha 2.0 - Um tabuleiro dentro de outro tabuleiro. Estratégia elevada ao máximo!">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>Ultimate Tic-Tac-Toe</h1>
+            <p class="subtitle">Jogo da Velha 2.0</p>
+        </header>
+
+        <!-- Seleção de modo de jogo -->
+        <div id="mode-selection" class="mode-selection">
+            <h2>Escolha o modo de jogo</h2>
+            <div class="mode-buttons">
+                <button id="pvp-btn" class="mode-btn">
+                    <span class="mode-icon">👥</span>
+                    <span class="mode-text">2 Jogadores</span>
+                </button>
+                <button id="pve-btn" class="mode-btn">
+                    <span class="mode-icon">🤖</span>
+                    <span class="mode-text">vs Computador</span>
+                </button>
+            </div>
+
+            <!-- Opções para 2 Jogadores -->
+            <div id="pvp-options" class="pvp-options hidden">
+                <h3>Modo de Tempo</h3>
+                <div class="time-mode-buttons">
+                    <button class="time-mode-btn" data-time="off">
+                        <span class="time-icon">♾️</span>
+                        <span>Sem Tempo</span>
+                    </button>
+                    <button class="time-mode-btn" data-time="on">
+                        <span class="time-icon">⏱️</span>
+                        <span>Com Tempo</span>
+                        <small>Acelera a cada turno!</small>
+                    </button>
+                </div>
+            </div>
+
+            <div id="difficulty-selection" class="difficulty-selection hidden">
+                <h3>Dificuldade da IA</h3>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-difficulty="easy">😊 Fácil</button>
+                    <button class="difficulty-btn" data-difficulty="medium">🤔 Médio</button>
+                    <button class="difficulty-btn" data-difficulty="hard">😈 Difícil</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-area" class="game-area hidden">
+            <div class="game-info">
+                <div class="turn-indicator">
+                    <span>Vez do jogador:</span>
+                    <span id="current-player" class="player-x">X</span>
+                    <span id="ai-indicator" class="ai-indicator hidden">🤖</span>
+                </div>
+
+                <!-- Timer Display -->
+                <div id="timer-container" class="timer-container hidden">
+                    <div class="timer-bar-wrapper">
+                        <div id="timer-bar" class="timer-bar"></div>
+                    </div>
+                    <div class="timer-info">
+                        <span id="timer-seconds" class="timer-seconds">10</span>
+                        <span class="timer-label">segundos</span>
+                    </div>
+                </div>
+
+                <div id="game-message" class="game-message"></div>
+            </div>
+
+            <div class="macro-board" id="macro-board">
+                <!-- 9 mini-tabuleiros serão criados via JavaScript -->
+            </div>
+
+            <div class="controls">
+                <button id="restart-btn" class="restart-btn">
+                    <span class="btn-icon">↻</span>
+                    Reiniciar Jogo
+                </button>
+                <button id="menu-btn" class="menu-btn">
+                    <span class="btn-icon">🏠</span>
+                    Menu
+                </button>
+            </div>
+
+            <div class="rules-toggle">
+                <button id="rules-btn" class="rules-btn">📖 Como Jogar</button>
+            </div>
+        </div>
+
+        <div id="rules-modal" class="rules-modal hidden">
+            <div class="rules-content">
+                <button class="close-rules">×</button>
+                <h2>Como Jogar</h2>
+                <ul>
+                    <li><strong>Tabuleiro:</strong> 9 mini jogos da velha formando 1 grande</li>
+                    <li><strong>Turnos:</strong> X começa, depois alterna com O</li>
+                    <li><strong>Regra chave:</strong> A posição onde você joga determina onde o adversário deve jogar
+                    </li>
+                    <li><strong>Exemplo:</strong> Se você marca no canto superior esquerdo do mini-tabuleiro, o
+                        adversário deve jogar no tabuleiro grande do canto superior esquerdo</li>
+                    <li><strong>Tabuleiro livre:</strong> Se o destino já foi ganho ou está cheio, jogue onde quiser
+                    </li>
+                    <li><strong>Vitória:</strong> Ganhe 3 mini-tabuleiros em linha para vencer!</li>
+                    <li><strong>Modo Tempo:</strong> O timer acelera a cada turno! Se acabar, uma jogada aleatória é
+                        feita</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
