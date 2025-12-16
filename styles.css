@@ -80,6 +80,38 @@ body {
     margin-bottom: 30px;
 }
 
+/* Sound Toggle Button */
+.game-header {
+    position: relative;
+}
+
+.sound-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sound-toggle:hover {
+    background: var(--bg-secondary);
+    border-color: var(--player-x);
+    transform: scale(1.1);
+}
+
+.sound-toggle.muted {
+    opacity: 0.5;
+}
+
 /* ============================================
    Game Info
    ============================================ */

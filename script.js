@@ -2,6 +2,185 @@
 // Ultimate Tic-Tac-Toe - Game Logic with AI & Timer
 // ============================================
 
+// ============================================
+// Sound Manager - Web Audio API
+// ============================================
+class SoundManager {
+    constructor() {
+        this.audioContext = null;
+        this.enabled = true;
+        this.volume = 0.3;
+    }
+
+    init() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Web Audio API não suportada');
+            this.enabled = false;
+        }
+    }
+
+    ensureContext() {
+        if (!this.audioContext) {
+            this.init();
+        }
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+    }
+
+    // Som de jogada normal
+    playMove() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.frequency.value = 600;
+        osc.type = 'sine';
+
+        gain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+
+        osc.start();
+        osc.stop(this.audioContext.currentTime + 0.1);
+    }
+
+    // Som de vitória em mini-tabuleiro
+    playMiniWin() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const frequencies = [523, 659, 784]; // C5, E5, G5
+
+        frequencies.forEach((freq, i) => {
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.audioContext.destination);
+
+            osc.frequency.value = freq;
+            osc.type = 'triangle';
+
+            const startTime = this.audioContext.currentTime + (i * 0.1);
+            gain.gain.setValueAtTime(this.volume * 0.8, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.15);
+        });
+    }
+
+    // Som de vitória final
+    playWin() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const frequencies = [523, 659, 784, 1047]; // C5, E5, G5, C6
+
+        frequencies.forEach((freq, i) => {
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.audioContext.destination);
+
+            osc.frequency.value = freq;
+            osc.type = 'square';
+
+            const startTime = this.audioContext.currentTime + (i * 0.15);
+            gain.gain.setValueAtTime(this.volume, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.3);
+        });
+    }
+
+    // Som de timer acabando (alerta)
+    playTimerAlert() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.frequency.value = 800;
+        osc.type = 'sawtooth';
+
+        gain.gain.setValueAtTime(this.volume * 0.5, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
+
+        osc.start();
+        osc.stop(this.audioContext.currentTime + 0.15);
+    }
+
+    // Som de jogada aleatória (tempo acabou)
+    playRandomMove() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const frequencies = [400, 300];
+
+        frequencies.forEach((freq, i) => {
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.audioContext.destination);
+
+            osc.frequency.value = freq;
+            osc.type = 'triangle';
+
+            const startTime = this.audioContext.currentTime + (i * 0.1);
+            gain.gain.setValueAtTime(this.volume * 0.6, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.15);
+        });
+    }
+
+    // Som de clique de botão
+    playClick() {
+        if (!this.enabled) return;
+        this.ensureContext();
+
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.frequency.value = 1000;
+        osc.type = 'sine';
+
+        gain.gain.setValueAtTime(this.volume * 0.3, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.05);
+
+        osc.start();
+        osc.stop(this.audioContext.currentTime + 0.05);
+    }
+
+    toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+    }
+}
+
+// Instância global do gerenciador de som
+const soundManager = new SoundManager();
+
+
 class UltimateTicTacToe {
     constructor() {
         // Modo de jogo
@@ -172,6 +351,9 @@ class UltimateTicTacToe {
         this.timerBar.style.width = `${percentage}%`;
         this.timerSeconds.textContent = Math.ceil(this.currentTime);
 
+        const wasWarning = this.timerBar.classList.contains('warning');
+        const wasDanger = this.timerBar.classList.contains('danger');
+
         // Remover classes anteriores
         this.timerBar.classList.remove('warning', 'danger');
         this.timerSeconds.classList.remove('warning', 'danger');
@@ -180,6 +362,11 @@ class UltimateTicTacToe {
         if (percentage <= 30) {
             this.timerBar.classList.add('danger');
             this.timerSeconds.classList.add('danger');
+
+            // Som de alerta ao entrar em zona perigosa
+            if (!wasDanger) {
+                soundManager.playTimerAlert();
+            }
         } else if (percentage <= 50) {
             this.timerBar.classList.add('warning');
             this.timerSeconds.classList.add('warning');
@@ -188,6 +375,9 @@ class UltimateTicTacToe {
 
     onTimerExpired() {
         this.stopTimer();
+
+        // Som de tempo esgotado
+        soundManager.playRandomMove();
 
         // Fazer jogada aleatória
         const availableMoves = this.getAvailableMoves();
@@ -254,6 +444,19 @@ class UltimateTicTacToe {
                 this.rulesModal.classList.add('hidden');
             }
         });
+
+        // Botão de toggle de som
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle) {
+            soundToggle.addEventListener('click', () => {
+                const enabled = soundManager.toggle();
+                soundToggle.textContent = enabled ? '🔊' : '🔇';
+                soundToggle.classList.toggle('muted', !enabled);
+                if (enabled) {
+                    soundManager.playClick();
+                }
+            });
+        }
     }
 
     handleCellClick(e) {
@@ -287,6 +490,11 @@ class UltimateTicTacToe {
             this.stopTimer();
         }
 
+        // Som de jogada (se não for aleatória - ela tem som próprio)
+        if (!isRandom) {
+            soundManager.playMove();
+        }
+
         this.miniBoards[boardIndex][cellIndex] = this.currentPlayer;
 
         const cell = document.querySelector(
@@ -307,6 +515,9 @@ class UltimateTicTacToe {
         if (miniWinner) {
             this.miniBoardWinners[boardIndex] = miniWinner;
             this.updateMiniBoardVisual(boardIndex, miniWinner);
+
+            // Som de vitória no mini-tabuleiro
+            soundManager.playMiniWin();
 
             const macroWinner = this.checkMacroWinner();
             if (macroWinner) {
@@ -633,6 +844,9 @@ class UltimateTicTacToe {
     endGame(winner) {
         this.gameOver = true;
         this.stopTimer();
+
+        // Som de vitória final
+        soundManager.playWin();
 
         const overlay = document.createElement('div');
         overlay.className = 'victory-overlay';
